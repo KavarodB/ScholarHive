@@ -1,0 +1,24 @@
+{
+  "name": "scholarhivebackend",
+  "version": "1.0.0",
+  "description": "Scholar hive project",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server",
+    "build": "tsc"
+  },
+  "author": "Kaloyan Blagoev",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "express": "^4.18.2",
+    "nodemon": "^2.0.22"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.3.1",
+    "typescript": "^5.1.3"
+  }
+}
