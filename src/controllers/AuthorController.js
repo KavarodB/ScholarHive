@@ -1,6 +1,7 @@
 import semanticScholar from "../models/semanticScholarAPI.js";
 import AuthorLogicParser from "../logic/authorLogicParser.js";
 import AbstractController from "./AbstractController.js";
+import isEmptyObject from "../utils/utils.js";
 
 class AuthorController extends AbstractController {
 	async authorById(req, res) {
