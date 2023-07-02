@@ -1,15 +1,14 @@
 import axios from "axios";
 
 const SemanticScholar = {
-	getAuthorByName: (firstname, lastname) => {
-		const authorQuery = `${encodeURIComponent(firstname)}+${encodeURIComponent(
-			lastname
-		)}`;
+	getAuthorByName: (authorname) => {
 		const authorFields =
 			"fields=name,aliases,affiliations,homepage,paperCount,hIndex";
 		const authorLimit = "limit=40";
 		//API URL
-		const apiUrl = `https://api.semanticscholar.org/graph/v1/author/search?query=${authorQuery}&${authorFields}&${authorLimit}`;
+		const apiUrl = `https://api.semanticscholar.org/graph/v1/author/search?query=${encodeURIComponent(
+			authorname
+		)}&${authorFields}&${authorLimit}`;
 		return axios.get(apiUrl);
 	},
 	getAuthorById: (authorId) => {

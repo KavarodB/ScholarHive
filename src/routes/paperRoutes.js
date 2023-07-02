@@ -4,7 +4,7 @@ import PaperController from "../controllers/paperController.js";
 const paperController = new PaperController();
 
 // Route: /paper/search
-router.get(
+router.post(
 	"/search",
 	paperController.checkSigniture,
 	paperController.searchPapers

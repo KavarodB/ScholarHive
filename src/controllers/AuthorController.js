@@ -19,7 +19,7 @@ class AuthorController extends AbstractController {
 
 	async authorByName(req, res) {
 		const data = await semanticScholar
-			.getAuthorByName(req.body.firstname, req.body.lastname)
+			.getAuthorByName(req.body.authorname)
 			.catch(() => {
 				res.status(500).send("Error retrieving the list of authors");
 			});
