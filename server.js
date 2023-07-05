@@ -7,7 +7,13 @@ import paperRoutes from "./src/routes/paperRoutes.js";
 
 // Middleware
 app.use(json());
-app.use(cors())
+app.use(
+	cors({
+		origin: true, 
+		credentials: true, 
+		methods: "POST,GET,OPTIONS",
+	})
+);
 
 // Routes
 app.use("/author", authRoutes);

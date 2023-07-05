@@ -5,10 +5,11 @@ import isEmptyObject from "../utils/utils.js";
 
 class PaperController extends AbstractController {
 	async searchPapers(req, res) {
+		const { query, filters } = req.body;
 		const data = await semanticScholar
-			.getPaperByQuery(req.body.query, req.body.filters)
+			.getPaperByQuery(query, filters)
 			.catch(() => {
-				res.status(500).send("Error retrieving papers.");
+				res.status(500).send({ message: "API Error: Retrieving papers." });
 			});
 		if (!data) return;
 		const parsed = PaperLogicParser.searchPapersParser(data.data);
@@ -16,13 +17,30 @@ class PaperController extends AbstractController {
 		res.json(parsed);
 		res.end();
 	}
-	async checkSigniture(req, res, next) {
+	checkSigniture(req, res, next) {
 		if (isEmptyObject(req.body)) {
-			res.status(500).send("Error passed data is invalid.").end();
+			res
+				.status(500)
+				.send({ message: "Error: Request body should not be empty." })
+				.end();
 			return;
-		} else {
-			next();
 		}
+		switch (req.originalUrl) {
+			case " /paper/search":
+				if (!req.body.query) {
+					res
+						.status(500)
+						.send({
+							message: "Error: Request body should have property query",
+						})
+						.end();
+					return;
+				}
+				break;
+			default:
+				break;
+		}
+		next();
 	}
 }
 

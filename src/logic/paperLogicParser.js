@@ -1,10 +1,18 @@
+import SearchedPaper from "../classes/SearchedPaper.js";
+
 class PaperLogicParser {
 	static searchPapersParser(apiResponse) {
-		const obj = {
+		let results = [];
+		const papers = apiResponse.data;
+		papers.forEach((paper) => {
+			const searchedPaper = new SearchedPaper(paper);
+			results.push(searchedPaper);
+		});
+		const responseObject = {
 			totalFound: apiResponse.total,
-			results: apiResponse.data,
+			results: results,
 		};
-		return obj;
+		return responseObject;
 	}
 }
 

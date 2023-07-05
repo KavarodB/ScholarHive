@@ -1,5 +1,5 @@
 /**
- * AbstractController class is a generic type of a controller, 
+ * AbstractController class is a generic type of a controller,
  * it is used to implement the O/C principle and should only be extended.
  */
 class AbstractController {
@@ -10,7 +10,7 @@ class AbstractController {
 	 * @param {Response} res
 	 * @param {NextFunction} next
 	 */
-	async checkSigniture(req, res, next) {
+	checkSigniture(req, res, next) {
 		next();
 	}
 }
