@@ -29,7 +29,9 @@ const SemanticScholar = {
 		const paperFields =
 			"fields=title,venue,year,authors,abstract,citationCount,openAccessPdf,fieldsOfStudy,s2FieldsOfStudy,publicationTypes&limit=100";
 		//API URL
-		let apiUrl = `https://api.semanticscholar.org/graph/v1/paper/search?query=${query}&${paperFields}`;
+		let apiUrl = `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(
+			query
+		)}&${paperFields}`;
 		if (filters) {
 			let yearquery = "&year=";
 			let fieldofstudy = "&fieldsOfStudy=";
@@ -44,7 +46,9 @@ const SemanticScholar = {
 				fieldofstudy += filters.fieldsOfStudy;
 			}
 			//API URL
-			apiUrl = `https://api.semanticscholar.org/graph/v1/paper/search?query=${query}${yearquery}${fieldofstudy}&${paperFields}`;
+			apiUrl = `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(
+				query
+			)}${yearquery}${fieldofstudy}&${paperFields}`;
 		}
 		return axios.get(apiUrl);
 	},
