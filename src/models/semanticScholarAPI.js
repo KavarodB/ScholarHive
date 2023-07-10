@@ -52,6 +52,13 @@ const SemanticScholar = {
 		}
 		return axios.get(apiUrl);
 	},
+	postMultipleAuthors: (coauthorIds) => {
+		const coAuthorFields =
+			"fields=name,paperCount,citationCount,hIndex,papers,papers.title,papers.citationCount,papers.influentialCitationCount,papers.s2FieldsOfStudy";
+		//API URL
+		const apiUrl = `https://api.semanticscholar.org/graph/v1/author/batch?${coAuthorFields}`;
+		return axios.post(apiUrl,{ids:coauthorIds});
+	},
 };
 
 export default SemanticScholar;

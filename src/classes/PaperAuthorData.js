@@ -18,9 +18,6 @@ class PaperAuthorData {
 		this.coauthorIds = coauthorIds;
 		this.mostCited = this.#SortPapers(apiDataPapers);
 	}
-	toConsole(){
-		console.log("Object:",this);
-	}
 	#getKeywords(fieldsOfStudy) {
 		if (!fieldsOfStudy) return;
 		fieldsOfStudy.forEach((keyword) => {
@@ -32,7 +29,7 @@ class PaperAuthorData {
 		});
 	}
 	#getCoAuthors(authors) {
-		if (!authors || authors.length==0) return;
+		if (!authors || authors.length == 0) return;
 		authors.forEach((author) => {
 			if (author.authorId != this.#authorId) {
 				if (this.#coauthorMap.get(author.name)) {
@@ -62,21 +59,24 @@ class PaperAuthorData {
 		return Array.from(this.#keywordMap);
 	}
 	#SortCoauthors() {
-		//Sort by descending.
+		const coauthor_treshhold = 5;
+		//Remove "accidental coauthors" and sort by descending
 		this.#coauthorMap = new Map(
-			[...this.#coauthorMap.entries()].sort((a, b) => b[1] - a[1])
+			[...this.#coauthorMap.entries()]
+				.filter(([k, v]) => v >= coauthor_treshhold)
+				.sort((a, b) => b[1] - a[1])
 		);
 		//Coauthors -> binding name with id
 		let coauthorArray = Array.from(this.#coauthorMap.keys());
 		let coauthorIds = [];
-		for (let index = 0; index < Math.min(coauthorArray.length, 15); index++) {
+		for (let index = 0; index < coauthorArray.length; index++) {
 			const name = coauthorArray.shift();
 			const id = this.#coauthorNameMap.get(name);
 			coauthorIds.push(id);
 		}
 
 		return {
-			coauthors: Array.from(this.#coauthorMap).slice(0, 15),
+			coauthors: Array.from(this.#coauthorMap),
 			coauthorIds: coauthorIds,
 		};
 	}
@@ -86,9 +86,7 @@ class PaperAuthorData {
 	#SortPapers(papers) {
 		//Sort papers by most citations
 		// and return the first 3.
-		return papers
-			.sort((a, b) => (a.citationCount > b.citationCount ? -1 : 1))
-			.slice(0, 3);
+		return papers.sort((a, b) => (a.citationCount > b.citationCount ? -1 : 1));
 	}
 }
 export default PaperAuthorData;

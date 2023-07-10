@@ -3,13 +3,32 @@ import AuthorController from "../controllers/authorController.js";
 const authorController = new AuthorController();
 const router = Router();
 
-// Route: /author/id
-router.post("/id",authorController.checkSigniture, authorController.authorById);
-
 // Route: /author/search
-router.post("/search", authorController.checkSigniture, authorController.authorByName);
+router.post(
+	"/search",
+	authorController.checkSigniture,
+	authorController.authorByName
+);
 
-//Route: /author/papers
-router.post("/papers", authorController.checkSigniture, authorController.authorPapers);
+// Route: /author/id
+router.post(
+	"/id",
+	authorController.checkSigniture,
+	authorController.authorById
+);
+
+//Route: /author/citations
+router.post(
+	"/citations",
+	authorController.checkSigniture,
+	authorController.authorPapers
+);
+
+//Route: /author/coauthors
+router.post(
+	"/coauthors",
+	authorController.checkSigniture,
+	authorController.authorCoAuthors
+);
 
 export default router;
