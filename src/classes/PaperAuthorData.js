@@ -32,14 +32,14 @@ class PaperAuthorData {
 		if (!authors || authors.length == 0) return;
 		authors.forEach((author) => {
 			if (author.authorId != this.#authorId) {
-				if (this.#coauthorMap.get(author.name)) {
-					this.#coauthorMap.set(
-						author.name,
-						this.#coauthorMap.get(author.name) + 1
-					);
+				//Map author name to contributed papers.
+				const payload = this.#coauthorMap.get(author.name);
+				if (payload) {
+					this.#coauthorMap.set(author.name, payload + 1);
 				} else {
 					this.#coauthorMap.set(author.name, 1);
-					this.#coauthorNameMap.set(author.name, author.authorId);
+					if (!this.#coauthorNameMap.get(author.name))
+						this.#coauthorNameMap.set(author.name, author.authorId);
 				}
 			}
 		});
@@ -69,19 +69,22 @@ class PaperAuthorData {
 		//Coauthors -> binding name with id
 		let coauthorArray = Array.from(this.#coauthorMap.keys());
 		let coauthorIds = [];
-		for (let index = 0; index < coauthorArray.length; index++) {
+		const coAuthorLength = coauthorArray.length;
+		for (let index = 0; index < coAuthorLength; index++) {
 			const name = coauthorArray.shift();
 			const id = this.#coauthorNameMap.get(name);
 			coauthorIds.push(id);
 		}
-
 		return {
 			coauthors: Array.from(this.#coauthorMap),
 			coauthorIds: coauthorIds,
 		};
 	}
 	#SortYears() {
-		return Array.from(this.#yearMap);
+		//Sort years by decending.
+		return Array.from(this.#yearMap).sort((a, b) => {
+			return a[0] > b[0] ? -1 : 1;
+		});
 	}
 	#SortPapers(papers) {
 		//Sort papers by most citations

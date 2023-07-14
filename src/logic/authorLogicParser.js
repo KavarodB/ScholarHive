@@ -37,11 +37,9 @@ class AuthorLogicParser {
 
 	static authorCoAuthorParser(coauthors, fieldOfStudy) {
 		let coAuthorsArray = [];
+		fieldOfStudy = fieldOfStudy.slice(0, 2);
 		coauthors.forEach((coauthor) => {
-			const paperData = new PaperCoAuthorData(
-				coauthor.papers,
-				fieldOfStudy.slice(0, 2)
-			);
+			const paperData = new PaperCoAuthorData(coauthor.papers, fieldOfStudy);
 			//Response building.
 			const co_author = {
 				authorId: coauthor.authorId,
@@ -52,6 +50,10 @@ class AuthorLogicParser {
 				paperData: paperData,
 			};
 			coAuthorsArray.push(co_author);
+		});
+		//Sort by citation count.
+		coAuthorsArray.sort((author, author1) => {
+			return author.citationCount <= author1.citationCount ? 1 : -1;
 		});
 		return coAuthorsArray;
 	}

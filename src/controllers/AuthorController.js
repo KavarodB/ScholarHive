@@ -1,8 +1,8 @@
 import semanticScholar from "../models/semanticScholarAPI.js";
 import AuthorLogicParser from "../logic/authorLogicParser.js";
 import AbstractController from "./AbstractController.js";
-import isEmptyObject from "../utils/utils.js";
-import LRUCacheHandler from "../utils/cacheHandler.js";
+import isEmptyObject from "../utils/isEmpty.js";
+import LRUCacheHandler from "../utils/LRUcacheHandler.js";
 const cacheHandler = new LRUCacheHandler();
 const cacheCitations = new LRUCacheHandler();
 
@@ -80,22 +80,24 @@ class AuthorController extends AbstractController {
 		let coauthorIds = [];
 		let fieldOfStudy = [];
 		if (found) {
-			coauthorIds = found.paperData.coauthorIds;
+			coauthorIds = found.paperData.coauthorIds.slice(0, 100);
 			fieldOfStudy = found.paperData.fieldsOfStudy;
 		} else {
 			res.status(500).send({
 				message:
-					"Error: Retrieving the list of coauthors for scholar " + authorId,
+					"Error: Retrieving the list of coauthors for scholar" + authorId,
 			});
 			return;
 		}
+
 		const data = await semanticScholar
 			.postMultipleAuthors(coauthorIds)
 			.then((data) => data.data)
 			.catch((error) => {
+				console.log(error.response.data);
 				res.status(500).send({
 					message:
-						"Error: Retrieving the list of coauthors for scholar " + authorId,
+						"Error: Retrieving the list of coauthors for scholar" + authorId,
 				});
 			});
 		if (!data) return;
@@ -103,6 +105,7 @@ class AuthorController extends AbstractController {
 		res.json(parsed);
 		res.end();
 	}
+
 	checkSigniture(req, res, next) {
 		if (isEmptyObject(req.body)) {
 			res

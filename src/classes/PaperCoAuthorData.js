@@ -13,8 +13,9 @@ class PaperCoAuthorData {
 		if (!fieldsOfStudy) return;
 		fieldsOfStudy.forEach((keyword) => {
 			keyword = keyword.category;
-			if (this.#keywordMap.get(keyword)) {
-				this.#keywordMap.set(keyword, this.#keywordMap.get(keyword) + 1);
+			const payload = this.#keywordMap.get(keyword);
+			if (payload) {
+				this.#keywordMap.set(keyword, payload + 1);
 			} else {
 				this.#keywordMap.set(keyword, 1);
 			}
@@ -28,6 +29,8 @@ class PaperCoAuthorData {
 	}
 	#isInTheSameArea() {
 		let status = false;
+		if(!this.fieldsOfStudy) return status;
+
 		this.#fieldsOfStudy.forEach((field) => {
 			if (field[0] == this.fieldsOfStudy[0]) {
 				status = true;
