@@ -1,7 +1,7 @@
 import semanticScholar from "../models/semanticScholarAPI.js";
 import PaperLogicParser from "../logic/paperLogicParser.js";
 import AbstractController from "./AbstractController.js";
-import isEmptyObject from "../utils/utils.js";
+import isEmptyObject from "../utils/isEmpty.js";
 
 class PaperController extends AbstractController {
 	async searchPapers(req, res) {
