@@ -55,7 +55,12 @@ class AuthorLogicParser {
 		coAuthorsArray.sort((author, author1) => {
 			return author.citationCount <= author1.citationCount ? 1 : -1;
 		});
-		return { coAuthors: coAuthorsArray, fields: fieldOfStudy.slice(0, 3) };
+		// Top 3 Fields of study as a string.
+		let fields = fieldOfStudy.slice(0, 3).map((value) => value[0]);
+		return {
+			coAuthors: coAuthorsArray,
+			fields: fields,
+		};
 	}
 }
 
