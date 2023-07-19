@@ -56,10 +56,12 @@ class AuthorLogicParser {
 			return author.citationCount <= author1.citationCount ? 1 : -1;
 		});
 		// Top 3 Fields of study as a string.
-		let fields = fieldOfStudy.slice(0, 3).map((value) => value[0]);
+		const fields = coAuthorsArray
+			.map((coauthor) => coauthor.paperData.fieldsOfStudy)
+			.sort();
 		return {
 			coAuthors: coAuthorsArray,
-			fields: fields,
+			fields: Array.from(new Set(fields)),
 		};
 	}
 }

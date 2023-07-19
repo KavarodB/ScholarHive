@@ -25,7 +25,7 @@ class PaperCoAuthorData {
 		this.#keywordMap = new Map(
 			[...this.#keywordMap.entries()].sort((a, b) => b[1] - a[1])
 		);
-		return Array.from(this.#keywordMap).at(0);
+		return Array.from(this.#keywordMap).at(0)[0];
 	}
 	#isInTheSameArea() {
 		let status = false;
