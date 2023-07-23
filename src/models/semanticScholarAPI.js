@@ -10,7 +10,7 @@ const http = axios.create({
 });
 
 const SemanticScholar = {
-	getAuthorByName: (authorname) => {
+	getAuthorByName: async (authorname) => {
 		const authorFields =
 			"fields=name,aliases,affiliations,homepage,paperCount,hIndex";
 		const authorLimit = "limit=40";
@@ -18,23 +18,26 @@ const SemanticScholar = {
 		const apiUrl = `https://api.semanticscholar.org/graph/v1/author/search?query=${encodeURIComponent(
 			authorname
 		)}&${authorFields}&${authorLimit}`;
-		return http.get(apiUrl);
+		const response = await http.get(apiUrl);
+		return response.data;
 	},
-	getAuthorById: (authorId) => {
+	getAuthorById: async (authorId) => {
 		const authorFields =
 			"fields=name,aliases,affiliations,homepage,paperCount,citationCount,hIndex,papers.title,papers.venue,papers.year,papers.authors,papers.referenceCount,papers.citationCount,papers.fieldsOfStudy,papers.publicationTypes";
 		//API URL
 		const apiUrl = `https://api.semanticscholar.org/graph/v1/author/${authorId}?${authorFields}`;
-		return http.get(apiUrl);
+		const response = await http.get(apiUrl);
+		return response.data;
 	},
-	getAuthorsPaper: (authorId) => {
+	getAuthorsPaper: async (authorId) => {
 		const paperFields =
-			"fields=citationCount,citations.paperId,citations.authors,references.paperId,references.authors&limit=700";
+			"fields=citationCount,citations.paperId,citations.authors,references.paperId,references.authors&limit=1000";
 		//API URL
 		const apiUrl = `https://api.semanticscholar.org/graph/v1/author/${authorId}/papers?${paperFields}`;
-		return http.get(apiUrl);
+		const response = await http.get(apiUrl);
+		return response.data;
 	},
-	getPaperByQuery: (query, filters) => {
+	getPaperByQuery: async (query, filters) => {
 		const paperFields =
 			"fields=title,venue,year,authors,abstract,citationCount,openAccessPdf,fieldsOfStudy,s2FieldsOfStudy,publicationTypes&limit=100";
 		//API URL
@@ -61,14 +64,16 @@ const SemanticScholar = {
 				query
 			)}${yearquery}${fieldofstudy}&${paperFields}`;
 		}
-		return http.get(apiUrl);
+		const response = await http.get(apiUrl);
+		return response.data;
 	},
-	postMultipleAuthors: (coauthorIds) => {
+	postMultipleAuthors: async (coauthorIds) => {
 		const coAuthorFields =
 			"fields=name,paperCount,citationCount,hIndex,papers,papers.title,papers.citationCount,papers.influentialCitationCount,papers.s2FieldsOfStudy";
 		//API URL
 		const apiUrl = `https://api.semanticscholar.org/graph/v1/author/batch?${coAuthorFields}`;
-		return http.post(apiUrl, { ids: coauthorIds });
+		const response = await http.post(apiUrl, { ids: coauthorIds });
+		return response;
 	},
 };
 

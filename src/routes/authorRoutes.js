@@ -31,4 +31,11 @@ router.post(
 	authorController.authorCoAuthors
 );
 
+//Route: /author/compare
+router.post(
+	"/compare",
+	authorController.checkSigniture,
+	authorController.authorCompare
+);
+
 export default router;

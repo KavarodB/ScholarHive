@@ -3,11 +3,14 @@ import PaperCitationData from "../classes/PaperCitationData.js";
 import PaperCoAuthorData from "../classes/PaperCoAuthorData.js";
 
 class AuthorLogicParser {
-	static authorIdParser(authorId, apiResponse) {
-		const paperData = new PaperAuthorData(authorId, apiResponse.papers);
+	static authorIdParser(apiResponse) {
+		const paperData = new PaperAuthorData(
+			apiResponse.authorId,
+			apiResponse.papers
+		);
 		//Response building.
 		const responseObj = {
-			authorId: authorId,
+			authorId: apiResponse.authorId,
 			name: apiResponse.name,
 			aliases: apiResponse.aliases,
 			affiliations: apiResponse.affiliations,
@@ -21,24 +24,21 @@ class AuthorLogicParser {
 	}
 
 	static authorNameParser(apiResponse) {
-		const data = apiResponse.data;
 		//sort response by hIndex desending.
-		data.sort((a, b) => (a.hIndex > b.hIndex ? -1 : 1));
-		return data;
+		const content = apiResponse.data;
+		return content.sort((a, b) => (a.hIndex > b.hIndex ? -1 : 1));
 	}
 	static authorPapersParser(authorId, coauthorIds, apiResponse) {
-		const citationData = new PaperCitationData(
-			authorId,
-			coauthorIds,
-			apiResponse.data
-		);
+		const content = apiResponse.data;
+		const citationData = new PaperCitationData(authorId, coauthorIds, content);
 		return citationData;
 	}
 
 	static authorCoAuthorParser(coauthors, fieldOfStudy) {
 		let coAuthorsArray = [];
 		let fieldofStudy = fieldOfStudy.slice(0, 2);
-		coauthors.forEach((coauthor) => {
+		const content = coauthors.data;
+		content.forEach((coauthor) => {
 			const paperData = new PaperCoAuthorData(coauthor.papers, fieldofStudy);
 			//Response building.
 			const co_author = {
