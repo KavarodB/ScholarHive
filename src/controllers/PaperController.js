@@ -6,16 +6,15 @@ import isEmptyObject from "../utils/isEmpty.js";
 class PaperController extends AbstractController {
 	async searchPapers(req, res) {
 		const { query, filters } = req.body;
-		const data = await semanticScholar
-			.getPaperByQuery(query, filters)
-			.catch(() => {
-				res.status(500).send({ message: "API Error: Retrieving papers." });
-			});
-		if (!data) return;
-		const parsed = PaperLogicParser.searchPapersParser(data.data);
-
-		res.json(parsed);
-		res.end();
+		try {
+			const data = await semanticScholar.getPaperByQuery(query, filters);
+			const parsed = PaperLogicParser.searchPapersParser(data);
+			res.json(parsed);
+			res.end();
+		} catch (error) {
+			console.log(error.message);
+			res.status(500).send({ message: "API Error: Retrieving papers." });
+		}
 	}
 	checkSigniture(req, res, next) {
 		if (isEmptyObject(req.body)) {
