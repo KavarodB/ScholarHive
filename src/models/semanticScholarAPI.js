@@ -41,7 +41,7 @@ const SemanticScholar = {
 	},
 	getPaperByQuery: async (query, filters) => {
 		const paperFields =
-			"fields=title,venue,year,authors,abstract,citationCount,openAccessPdf,fieldsOfStudy,s2FieldsOfStudy,publicationTypes&limit=700";
+			"fields=title,venue,year,authors,abstract,citationCount,openAccessPdf,fieldsOfStudy,s2FieldsOfStudy,publicationTypes&limit=100";
 		//API URL
 		let apiUrl = `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(
 			query
