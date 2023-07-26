@@ -13,7 +13,7 @@ const SemanticScholar = {
 	getAuthorByName: async (authorname) => {
 		const authorFields =
 			"fields=name,aliases,affiliations,homepage,paperCount,hIndex";
-		const authorLimit = "limit=40";
+		const authorLimit = "limit=35";
 		//API URL
 		const apiUrl = `https://api.semanticscholar.org/graph/v1/author/search?query=${encodeURIComponent(
 			authorname
@@ -29,9 +29,11 @@ const SemanticScholar = {
 		const response = await http.get(apiUrl);
 		return response.data;
 	},
-	getAuthorsPaper: async (authorId) => {
-		const paperFields =
-			"fields=citationCount,citations.paperId,citations.authors,references.paperId,references.authors&limit=1000";
+	getAuthorsPaper: async (authorId, limit) => {
+		//Limit reset.
+		if (limit == null || limit >= 220) limit = 200;
+
+		const paperFields = `fields=citationCount,citations.authors&limit=${limit}`;
 		//API URL
 		const apiUrl = `https://api.semanticscholar.org/graph/v1/author/${authorId}/papers?${paperFields}`;
 		const response = await http.get(apiUrl);
@@ -39,7 +41,7 @@ const SemanticScholar = {
 	},
 	getPaperByQuery: async (query, filters) => {
 		const paperFields =
-			"fields=title,venue,year,authors,abstract,citationCount,openAccessPdf,fieldsOfStudy,s2FieldsOfStudy,publicationTypes&limit=100";
+			"fields=title,venue,year,authors,abstract,citationCount,openAccessPdf,fieldsOfStudy,s2FieldsOfStudy,publicationTypes&limit=700";
 		//API URL
 		let apiUrl = `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(
 			query
@@ -73,7 +75,14 @@ const SemanticScholar = {
 		//API URL
 		const apiUrl = `https://api.semanticscholar.org/graph/v1/author/batch?${coAuthorFields}`;
 		const response = await http.post(apiUrl, { ids: coauthorIds });
-		return response;
+		return response.data;
+	},
+	postMultiplePapers: async (papersIds) => {
+		const paperFields = "fields=citationCount,citations.paperId";
+		//API URL
+		const apiUrl = `https://api.semanticscholar.org/graph/v1/paper/batch?${paperFields}`;
+		const response = await http.post(apiUrl, { ids: papersIds });
+		return response.data;
 	},
 };
 

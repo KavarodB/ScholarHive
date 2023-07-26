@@ -24,6 +24,13 @@ router.post(
 	authorController.authorPapers
 );
 
+//Route to replace /author/citations
+router.post(
+	"/test",
+	authorController.checkSigniture,
+	authorController.authorTest
+);
+
 //Route: /author/coauthors
 router.post(
 	"/coauthors",

@@ -28,18 +28,22 @@ class AuthorLogicParser {
 		const content = apiResponse.data;
 		return content.sort((a, b) => (a.hIndex > b.hIndex ? -1 : 1));
 	}
-	static authorPapersParser(authorId, coauthorIds, apiResponse) {
+
+	static authorPapersParser(authorId, coauthorIds,apiResponse) {
 		const content = apiResponse.data;
 		const citationData = new PaperCitationData(authorId, coauthorIds, content);
 		return citationData;
 	}
 
-	static authorCoAuthorParser(coauthors, fieldOfStudy) {
+	static authorCoAuthorParser(coauthors) {
 		let coAuthorsArray = [];
-		let fieldofStudy = fieldOfStudy.slice(0, 2);
-		const content = coauthors.data;
+		const content = coauthors;
 		content.forEach((coauthor) => {
-			const paperData = new PaperCoAuthorData(coauthor.papers, fieldofStudy);
+			if (coauthor.papers.length == 0) {
+				console.log(coauthor.authorId);
+				return;
+			}
+			const paperData = new PaperCoAuthorData(coauthor.papers);
 			//Response building.
 			const co_author = {
 				authorId: coauthor.authorId,

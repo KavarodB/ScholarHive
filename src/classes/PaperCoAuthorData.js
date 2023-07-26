@@ -1,16 +1,12 @@
 class PaperCoAuthorData {
 	#keywordMap = new Map();
-	#fieldsOfStudy = [];
-	constructor(apiDataPapers, fieldsOfStudy) {
-		this.#fieldsOfStudy = fieldsOfStudy;
+	constructor(apiDataPapers) {
 		apiDataPapers.forEach((paper) => {
 			this.#getKeywords(paper.s2FieldsOfStudy);
 		});
-		this.fieldsOfStudy = this.#SortKeywords();
-		this.inTheSameArea = this.#isInTheSameArea();
+		if (this.#keywordMap.size > 0) this.fieldsOfStudy = this.#SortKeywords();
 	}
 	#getKeywords(fieldsOfStudy) {
-		if (!fieldsOfStudy) return;
 		fieldsOfStudy.forEach((keyword) => {
 			keyword = keyword.category;
 			const payload = this.#keywordMap.get(keyword);
@@ -26,18 +22,6 @@ class PaperCoAuthorData {
 			[...this.#keywordMap.entries()].sort((a, b) => b[1] - a[1])
 		);
 		return Array.from(this.#keywordMap).at(0)[0];
-	}
-	#isInTheSameArea() {
-		let status = false;
-		if(!this.fieldsOfStudy) return status;
-
-		this.#fieldsOfStudy.forEach((field) => {
-			if (field[0] == this.fieldsOfStudy[0]) {
-				status = true;
-				return;
-			}
-		});
-		return status;
 	}
 }
 export default PaperCoAuthorData;

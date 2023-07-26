@@ -7,13 +7,11 @@ class PaperCitationData {
 		this.#coauthorIds = coauthorIds;
 		this.totalCitations = 0;
 		this.selfCitationCount = 0;
-		this.selfRefrenceCount = 0;
 		if (this.#coauthorIds.length != 0) this.coAuthorCitationCount = 0;
-		
+
 		const papers = apiPaperData;
 		papers.forEach((paper) => {
 			this.#getPaperCitation(paper.citations);
-			this.#getPaperRefrence(paper.references);
 			this.#getTotalCitationCount(paper.citationCount);
 		});
 		this.selfCitationRate = this.#calculateSelfCitationRate();
@@ -36,31 +34,16 @@ class PaperCitationData {
 			}
 		});
 	}
-	#getPaperRefrence(references) {
-		if (!references) return;
-		references.forEach((reference) => {
-			if (reference.paperId) {
-				reference.authors.forEach((author) => {
-					if (author.authorId == this.#authorId) {
-						this.selfRefrenceCount++;
-					}
-				});
-			}
-		});
-	}
 	#getTotalCitationCount(citationCount) {
 		if (citationCount) this.totalCitations += citationCount;
 	}
 	#calculateSelfCitationRate() {
 		let selfcitationrate = 0;
 		let divider = this.selfCitationCount;
-		if (this.selfCitationCount != this.selfRefrenceCount) {
-			divider = Math.max(this.selfCitationCount, this.selfRefrenceCount);
-		}
 		selfcitationrate = (this.totalCitations / divider).toPrecision(11);
 		selfcitationrate = 100 / selfcitationrate;
 
-		return Number.parseFloat(selfcitationrate.toPrecision(4));
+		return Number.parseFloat(selfcitationrate.toPrecision(3));
 	}
 	#calculateCoCitationRate() {
 		let cocitationrate = 0;
@@ -68,7 +51,7 @@ class PaperCitationData {
 		cocitationrate = (this.totalCitations / divider).toPrecision(11);
 		cocitationrate = 100 / cocitationrate;
 
-		return Number.parseFloat(cocitationrate.toPrecision(4));
+		return Number.parseFloat(cocitationrate.toPrecision(3));
 	}
 }
 export default PaperCitationData;
