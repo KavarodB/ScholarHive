@@ -1,13 +1,21 @@
 import PaperAuthorData from "../classes/PaperAuthorData.js";
 import PaperCitationData from "../classes/PaperCitationData.js";
 import PaperCoAuthorData from "../classes/PaperCoAuthorData.js";
-
+import filterPaperWithTotalCitation from "../utils/sortPapersByCitations.js";
 class AuthorLogicParser {
+	
 	static authorIdParser(apiResponse) {
 		const paperData = new PaperAuthorData(
 			apiResponse.authorId,
 			apiResponse.papers
 		);
+		let index = filterPaperWithTotalCitation(apiResponse.papers).length;
+		if (
+			apiResponse.paperCount > 500 &&
+			apiResponse.citationCount > paperData.citationCount &&
+			paperData.citationCount < 9500
+		)
+			index =index + Math.floor((apiResponse.paperCount - index) / 2.4);
 		//Response building.
 		const responseObj = {
 			authorId: apiResponse.authorId,
@@ -18,6 +26,7 @@ class AuthorLogicParser {
 			paperCount: apiResponse.paperCount,
 			citationCount: apiResponse.citationCount,
 			hIndex: apiResponse.hIndex,
+			index: index,
 			paperData: paperData,
 		};
 		return responseObj;
@@ -29,9 +38,9 @@ class AuthorLogicParser {
 		return content.sort((a, b) => (a.hIndex > b.hIndex ? -1 : 1));
 	}
 
-	static authorPapersParser(authorId, coauthorIds,apiResponse) {
+	static authorPapersParser(authorId, apiResponse) {
 		const content = apiResponse.data;
-		const citationData = new PaperCitationData(authorId, coauthorIds, content);
+		const citationData = new PaperCitationData(authorId, content);
 		return citationData;
 	}
 

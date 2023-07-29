@@ -1,41 +1,34 @@
 class PaperCitationData {
 	#authorId = "null";
-	#coauthorIds = [];
-
-	constructor(authorId, coauthorIds = [], apiPaperData) {
+	constructor(authorId, apiPaperData) {
 		this.#authorId = authorId;
-		this.#coauthorIds = coauthorIds;
 		this.totalCitations = 0;
 		this.selfCitationCount = 0;
-		if (this.#coauthorIds.length != 0) this.coAuthorCitationCount = 0;
-
-		const papers = apiPaperData;
-		papers.forEach((paper) => {
-			this.#getPaperCitation(paper.citations);
-			this.#getTotalCitationCount(paper.citationCount);
-		});
-		this.selfCitationRate = this.#calculateSelfCitationRate();
-
-		if (this.#coauthorIds.length != 0)
-			this.coCitationRate = this.#calculateCoCitationRate();
-	}
-	#getPaperCitation(citations) {
-		if (!citations) return;
-		citations.forEach((citation) => {
-			if (citation.paperId) {
-				citation.authors.forEach((author) => {
-					const authorId = author.authorId;
-					if (authorId == this.#authorId) {
-						this.selfCitationCount++;
-					}
-					if (this.#coauthorIds.includes(author.authorId))
-						this.coAuthorCitationCount++;
-				});
+		this.coAuthorCitationCount = 0;
+		apiPaperData.forEach((paper) => {
+			if (paper.paperId == null || paper.citationCount != 0) {
+				this.#getPaperCitation(paper.citations, paper.authors);
+				this.totalCitations += paper.citationCount;
 			}
 		});
+		this.selfCitationRate = this.#calculateSelfCitationRate();
+		this.coCitationRate = this.#calculateCoCitationRate();
 	}
-	#getTotalCitationCount(citationCount) {
-		if (citationCount) this.totalCitations += citationCount;
+	#getPaperCitation(citations, authors) {
+		if (authors.length == 0) return;
+		citations.forEach((citation) => {
+			const self = citation.authors
+				.map((author) => author.authorId)
+				.includes(this.#authorId);
+			if (self) this.selfCitationCount++;
+			const cit_authors = citation.authors.map((author) => author.authorId);
+			const coauthors = authors.map((author) => author.authorId);
+			const found = cit_authors.some((author) => coauthors.includes(author));
+			if (found) {
+				this.coAuthorCitationCount++;
+				return;
+			}
+		});
 	}
 	#calculateSelfCitationRate() {
 		let selfcitationrate = 0;

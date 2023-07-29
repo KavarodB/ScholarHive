@@ -3,7 +3,6 @@ import AuthorLogicParser from "../logic/authorLogicParser.js";
 import AbstractController from "./AbstractController.js";
 import isEmptyObject from "../utils/isEmpty.js";
 import LRUCacheHandler from "../utils/LRUcacheHandler.js";
-import filterPaperWithTotalCitation from "../utils/sortPapersByCitations.js";
 
 const cacheHandler = new LRUCacheHandler();
 const cacheCitations = new LRUCacheHandler();
@@ -57,19 +56,10 @@ class AuthorController extends AbstractController {
 		}
 		try {
 			const found = cacheHandler.get(authorId);
-			let coauthorIds = [];
 			let limit = null;
-			if (found) {
-				coauthorIds = found.paperData.coauthorIds;
-				limit = found.paperCount;
-			}
+			if (found) limit = found.index;
 			const data = await semanticScholar.getAuthorsPaper(authorId, limit);
-			console.log(data.data.length);
-			const parsed = AuthorLogicParser.authorPapersParser(
-				authorId,
-				coauthorIds,
-				data
-			);
+			const parsed = AuthorLogicParser.authorPapersParser(authorId, data);
 			cacheCitations.set(authorId, parsed);
 			res.json(parsed).end();
 		} catch (error) {
@@ -118,15 +108,14 @@ class AuthorController extends AbstractController {
 				.map((entry) => entry.citationData);
 
 			// Use Promise.all to make multiple API requests asynchronously
-			const authorDataPromises = toBeRequested.map((authorId) =>
-				semanticScholar.getAuthorsPaper(authorId.authorId,150)
+			const authorDataPromises = toBeRequested.map((author) =>
+				semanticScholar.getAuthorsPaper(author.authorId, author.index)
 			);
 
 			const authorDataResults = await Promise.all(authorDataPromises);
 			const citationDataResults = authorDataResults.map((result, index) => {
 				const data = AuthorLogicParser.authorPapersParser(
 					toBeRequested[index].authorId,
-					toBeRequested[index].coauthorIds.slice(0, 100),
 					result
 				);
 				cacheCitations.set(toBeRequested[index].authorId, data);
@@ -137,34 +126,6 @@ class AuthorController extends AbstractController {
 		} catch (error) {
 			console.log(error.message);
 			res.status(500).json({ message: "Error: " + error.message });
-		}
-	}
-
-	async authorTest(req, res) {
-		const { authorId } = req.body;
-		const found = cacheHandler.get(authorId);
-		let paperIds = [];
-		if (found) {
-			//100 most relevent papers. sorted from previous call.
-			paperIds = filterPaperWithTotalCitation(found.paperData.mostCited)
-				.map((paper) => paper.paperId)
-				.slice(0, 90);
-		} else {
-			res.status(500).send({
-				message:
-					"Error: Retrieving the list of papers for scholar  " + authorId,
-			});
-			return;
-		}
-		try {
-			const data = await semanticScholar.postMultiplePapers(paperIds);
-			//const parsed = AuthorLogicParser.authorCoAuthorParser(data);
-			res.json(data).end();
-		} catch (error) {
-			console.log(error.message);
-			res.status(500).send({
-				message: "Error: Retrieving the list of papers for scholar " + authorId,
-			});
 		}
 	}
 
@@ -228,10 +189,6 @@ class AuthorController extends AbstractController {
 					});
 				}
 				break;
-			case "/author/test":
-				return res.status(400).json({
-					message: "Error: Access denied.",
-				});
 			default:
 				break;
 		}

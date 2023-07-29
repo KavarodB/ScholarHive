@@ -31,9 +31,8 @@ const SemanticScholar = {
 	},
 	getAuthorsPaper: async (authorId, limit) => {
 		//Limit reset.
-		if (limit == null || limit >= 220) limit = 200;
-
-		const paperFields = `fields=citationCount,citations.authors&limit=${limit}`;
+		if (limit == null && limit > 700) limit = 500;
+		const paperFields = `fields=citationCount,authors,citations.authors&limit=${limit}`;
 		//API URL
 		const apiUrl = `https://api.semanticscholar.org/graph/v1/author/${authorId}/papers?${paperFields}`;
 		const response = await http.get(apiUrl);
@@ -75,13 +74,6 @@ const SemanticScholar = {
 		//API URL
 		const apiUrl = `https://api.semanticscholar.org/graph/v1/author/batch?${coAuthorFields}`;
 		const response = await http.post(apiUrl, { ids: coauthorIds });
-		return response.data;
-	},
-	postMultiplePapers: async (papersIds) => {
-		const paperFields = "fields=citationCount,citations.paperId";
-		//API URL
-		const apiUrl = `https://api.semanticscholar.org/graph/v1/paper/batch?${paperFields}`;
-		const response = await http.post(apiUrl, { ids: papersIds });
 		return response.data;
 	},
 };

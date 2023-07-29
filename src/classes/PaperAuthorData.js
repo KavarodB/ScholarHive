@@ -17,6 +17,7 @@ class PaperAuthorData {
 		this.coauthors = coauthors;
 		this.coauthorIds = coauthorIds;
 		this.mostCited = this.#SortPapers(apiDataPapers);
+		this.citationCount = this.mostCited.map(paper=>paper.citationCount).reduce((result,value)=>result+=value,0);
 	}
 	#getKeywords(fieldsOfStudy) {
 		if (!fieldsOfStudy) return;
@@ -88,7 +89,6 @@ class PaperAuthorData {
 	}
 	#SortPapers(papers) {
 		//Sort papers by most citations
-		// and return the first 3.
 		return papers.sort((a, b) => (a.citationCount > b.citationCount ? -1 : 1));
 	}
 }
