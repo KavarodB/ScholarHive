@@ -20,7 +20,10 @@ class PaperCitationData {
 			const self = citation.authors
 				.map((author) => author.authorId)
 				.includes(this.#authorId);
-			if (self) this.selfCitationCount++;
+			if (self) {
+				this.selfCitationCount++;
+				return;
+			}
 			const cit_authors = citation.authors.map((author) => author.authorId);
 			const coauthors = authors.map((author) => author.authorId);
 			const found = cit_authors.some((author) => coauthors.includes(author));
