@@ -63,7 +63,6 @@ class AuthorController extends AbstractController {
 			cacheCitations.set(authorId, parsed);
 			res.json(parsed).end();
 		} catch (error) {
-			console.log(error.message);
 			res.status(500).send({
 				message: error.message,
 			});
@@ -89,7 +88,6 @@ class AuthorController extends AbstractController {
 			const parsed = AuthorLogicParser.authorCoAuthorParser(data);
 			res.json(parsed).end();
 		} catch (error) {
-			console.log(error.message);
 			res.status(500).send({
 				message:
 					"Error: Retrieving the list of coauthors for scholar " + authorId,
@@ -124,7 +122,6 @@ class AuthorController extends AbstractController {
 			citationDataResults.push(...toBeLeft);
 			res.json(citationDataResults);
 		} catch (error) {
-			console.log(error.message);
 			res.status(500).json({ message: "Error: " + error.message });
 		}
 	}

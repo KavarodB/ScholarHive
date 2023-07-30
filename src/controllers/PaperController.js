@@ -12,7 +12,6 @@ class PaperController extends AbstractController {
 			res.json(parsed);
 			res.end();
 		} catch (error) {
-			console.log(error.message);
 			res.status(500).send({ message: "API Error: Retrieving papers." });
 		}
 	}
