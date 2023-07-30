@@ -1,21 +1,63 @@
 # ScholarHive
-The backend for ScholarHive web-application
+Scholar Hive is a web-based application that allows researchers and scholars to analyze profiles based on publications, citations, h-index, and other relevant metrics, and visualize that data in a visual and textual form.
+This application is written with Node.js and Express, fully native for the browser.
 
-## How to set up
-Make sure you have installed node with npm first.
-You can check it by typing in the terminal:
+## Installation Node.js
+For Ubuntu follow the instruction below:
+
+To get this version, you can use the apt package manager.
+Refresh your local package index first
+```bash 
+sudo apt update
 ```
+Then install Node.js:
+```bash 
+sudo apt install nodejs
+```
+Check that the installation was successful by querying node for its version number:
+```bash 
+sudo apt update
+```
+If successful, it should output this one or a greater version:
+```npm
+v16.15.0
+```
+And then finally you will need npm installed
+```npm
+sudo apt install npm
+```
+And check the version again to verify a successful installation.
+```npm 
 npm --version
 ```
-and if there is no error that means there is a working enviroment with node.js and npm. Preferable the version should be >= 8.5
-
-After this type
+it should output something like this:
+```npm 
+8.5.5
 ```
+or greater.
+
+For Mac and Windows check the links below:
+1. [Windows](https://radixweb.com/blog/installing-npm-and-nodejs-on-windows-and-mac#windows)
+2. [Mac](https://radixweb.com/blog/installing-npm-and-nodejs-on-windows-and-mac#mac) 
+
+## Installation project
+After you have installed npm and node.js 
+open a terminal in the project and type the following:
+```npm
 npm install
 ```
-and to run the project on port 3000
-type 
-``` 
-npm run dev
-```
+If there is no error, you are ready to run the project.
 
+## Run locally
+Run the project by typing in the terminal 
+```npm
+npm start
+```
+And open a browser of your choice (preferably something with Chromium) and navigate to
+[localhost:3000](http://localhost:3000)
+
+## Contributing
+Made by: 
+Kaloyan Blagoev, Fengyuan Xu, Ming Ma, Wencan Wang.
+## License
+[MIT](https://choosealicense.com/licenses/mit/)

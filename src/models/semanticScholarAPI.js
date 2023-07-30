@@ -31,7 +31,7 @@ const SemanticScholar = {
 	},
 	getAuthorsPaper: async (authorId, limit) => {
 		//Limit reset.
-		if (limit == null && limit > 700) limit = 500;
+		if (limit == null || limit > 700) limit = 500;
 		const paperFields = `fields=citationCount,authors,citations.authors&limit=${limit}`;
 		//API URL
 		const apiUrl = `https://api.semanticscholar.org/graph/v1/author/${authorId}/papers?${paperFields}`;

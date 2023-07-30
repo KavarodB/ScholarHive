@@ -17,7 +17,9 @@ class PaperAuthorData {
 		this.coauthors = coauthors;
 		this.coauthorIds = coauthorIds;
 		this.mostCited = this.#SortPapers(apiDataPapers);
-		this.citationCount = this.mostCited.map(paper=>paper.citationCount).reduce((result,value)=>result+=value,0);
+		this.citationCount = this.mostCited
+			.map((paper) => paper.citationCount)
+			.reduce((result, value) => (result += value), 0);
 	}
 	#getKeywords(fieldsOfStudy) {
 		if (!fieldsOfStudy) return;
@@ -88,8 +90,10 @@ class PaperAuthorData {
 		});
 	}
 	#SortPapers(papers) {
-		//Sort papers by most citations
-		return papers.sort((a, b) => (a.citationCount > b.citationCount ? -1 : 1));
+		//Sort papers by most citations without mutating them.
+		return [...papers].sort((a, b) =>
+			a.citationCount > b.citationCount ? -1 : 1
+		);
 	}
 }
 export default PaperAuthorData;

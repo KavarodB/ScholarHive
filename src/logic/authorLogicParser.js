@@ -3,19 +3,31 @@ import PaperCitationData from "../classes/PaperCitationData.js";
 import PaperCoAuthorData from "../classes/PaperCoAuthorData.js";
 import filterPaperWithTotalCitation from "../utils/sortPapersByCitations.js";
 class AuthorLogicParser {
-	
 	static authorIdParser(apiResponse) {
+		// Parser paper data.
 		const paperData = new PaperAuthorData(
 			apiResponse.authorId,
 			apiResponse.papers
 		);
+		// Find the limit of papers that reach the quota of 10K citations.
 		let index = filterPaperWithTotalCitation(apiResponse.papers).length;
+		// Add increment for edge case.
 		if (
 			apiResponse.paperCount > 500 &&
 			apiResponse.citationCount > paperData.citationCount &&
 			paperData.citationCount < 9500
-		)
-			index =index + Math.floor((apiResponse.paperCount - index) / 2.4);
+		) {
+			//Papers left to max
+			const delta1 = apiResponse.paperCount - index;
+			//Citations left to max.
+			const delta2 = apiResponse.citationCount - paperData.citationCount;
+			//Citations left to goal
+			const delta3 = 10500 - paperData.citationCount;
+			// Added ratio to goal.
+			const delta4 = Math.round((delta3 * delta1) / delta2);
+			index = index + delta4;
+		}
+
 		//Response building.
 		const responseObj = {
 			authorId: apiResponse.authorId,

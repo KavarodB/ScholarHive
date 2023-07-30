@@ -1,7 +1,6 @@
 class PaperCitationData {
-	#authorId = "null";
 	constructor(authorId, apiPaperData) {
-		this.#authorId = authorId;
+		this.authorId = authorId;
 		this.totalCitations = 0;
 		this.selfCitationCount = 0;
 		this.coAuthorCitationCount = 0;
@@ -19,7 +18,7 @@ class PaperCitationData {
 		citations.forEach((citation) => {
 			const self = citation.authors
 				.map((author) => author.authorId)
-				.includes(this.#authorId);
+				.includes(this.authorId);
 			if (self) {
 				this.selfCitationCount++;
 				return;
