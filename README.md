@@ -14,9 +14,9 @@ Then install Node.js:
 ```bash 
 sudo apt install nodejs
 ```
-Check that the installation was successful by querying node for its version number:
+Check that the installation was successful by querying node for its version number like:
 ```bash 
-sudo apt update
+node --version
 ```
 If successful, it should output this one or a greater version:
 ```npm
@@ -26,15 +26,15 @@ And then finally you will need npm installed
 ```npm
 sudo apt install npm
 ```
-And check the version again to verify a successful installation.
+Mind no warnings or errors after the installation just
+check the npm version to verify a successful installation.
 ```npm 
 npm --version
 ```
-it should output something like this:
+it should output something this or a greater version:
 ```npm 
 8.5.5
 ```
-or greater.
 
 For Mac and Windows check the links below:
 1. [Windows](https://radixweb.com/blog/installing-npm-and-nodejs-on-windows-and-mac#windows)

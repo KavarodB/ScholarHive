@@ -1,6 +1,6 @@
 import { Router } from "express";
 const router = Router();
-import PaperController from "../controllers/paperController.js";
+import PaperController from "../controllers/PaperController.js";
 const paperController = new PaperController();
 
 // Route: /paper/search
