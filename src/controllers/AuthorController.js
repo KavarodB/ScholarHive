@@ -138,7 +138,10 @@ class AuthorController extends AbstractController {
 
 			// Use Promise.all to make multiple API requests asynchronously
 			const authorDataPromises = toBeRequested.map((author) =>
-				semanticScholar.getAuthorsPaper(author.authorId, author.index/2)
+				semanticScholar.getAuthorsPaper(
+					author.authorId,
+					Math.floor(author.index / 2)
+				)
 			);
 
 			const authorDataResults = await Promise.all(authorDataPromises);
