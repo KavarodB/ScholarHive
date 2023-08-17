@@ -2,7 +2,7 @@ import NodeCache from "node-cache";
 
 class LRUCacheHandler {
 	#cache = null;
-	constructor(maxSize = 6) {
+	constructor(maxSize = 12) {
 		this.#cache = new NodeCache();
 		this.maxSize = maxSize;
 		this.lruQueue = [];

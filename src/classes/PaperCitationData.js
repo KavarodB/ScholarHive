@@ -5,10 +5,8 @@ class PaperCitationData {
 		this.selfCitationCount = 0;
 		this.coAuthorCitationCount = 0;
 		apiPaperData.forEach((paper) => {
-			if (paper.paperId == null || paper.citationCount != 0) {
+			if (paper.paperId == null || paper.citationCount != 0)
 				this.#getPaperCitation(paper.citations, paper.authors);
-				this.totalCitations += paper.citationCount;
-			}
 		});
 		this.selfCitationRate = this.#calculateSelfCitationRate();
 		this.coCitationRate = this.#calculateCoCitationRate();
@@ -16,6 +14,7 @@ class PaperCitationData {
 	#getPaperCitation(citations, authors) {
 		if (authors.length == 0) return;
 		citations.forEach((citation) => {
+			this.totalCitations++;
 			const self = citation.authors
 				.map((author) => author.authorId)
 				.includes(this.authorId);

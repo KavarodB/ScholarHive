@@ -1,6 +1,7 @@
 import PaperAuthorData from "../classes/PaperAuthorData.js";
 import PaperCitationData from "../classes/PaperCitationData.js";
 import PaperCoAuthorData from "../classes/PaperCoAuthorData.js";
+import calcIndexEdgeCase from "../utils/calculateIndexEdge.js";
 import filterPaperWithTotalCitation from "../utils/sortPapersByCitations.js";
 class AuthorLogicParser {
 	static authorIdParser(apiResponse) {
@@ -13,21 +14,17 @@ class AuthorLogicParser {
 		let index = filterPaperWithTotalCitation(apiResponse.papers).length;
 		// Add increment for edge case.
 		if (
-			apiResponse.paperCount > 500 &&
+			index == 500 &&
 			apiResponse.citationCount > paperData.citationCount &&
-			paperData.citationCount < 9500
-		) {
-			//Papers left to max
-			const delta1 = apiResponse.paperCount - index;
-			//Citations left to max.
-			const delta2 = apiResponse.citationCount - paperData.citationCount;
-			//Citations left to goal
-			const delta3 = 10500 - paperData.citationCount;
-			// Added ratio to goal.
-			const delta4 = Math.round((delta3 * delta1) / delta2);
-			index = index + delta4;
-		}
-
+			paperData.citationCount < 9800
+		)
+			index = calcIndexEdgeCase(
+				apiResponse.paperCount,
+				apiResponse.citationCount,
+				paperData.citationCount,
+				index
+			);
+		console.log("Index", index);
 		//Response building.
 		const responseObj = {
 			authorId: apiResponse.authorId,
@@ -51,8 +48,7 @@ class AuthorLogicParser {
 	}
 
 	static authorPapersParser(authorId, apiResponse) {
-		const content = apiResponse.data;
-		const citationData = new PaperCitationData(authorId, content);
+		const citationData = new PaperCitationData(authorId, apiResponse);
 		return citationData;
 	}
 

@@ -38,6 +38,15 @@ const SemanticScholar = {
 		const response = await http.get(apiUrl);
 		return response.data;
 	},
+	getAuthorsPaperOffset: async (authorId, limit, offset) => {
+		//Limit reset.
+		if (limit == null || limit > 500) limit = 500;
+		const paperFields = `fields=citationCount,authors,citations.authors&limit=${limit}&offset=${offset}`;
+		//API URL
+		const apiUrl = `https://api.semanticscholar.org/graph/v1/author/${authorId}/papers?${paperFields}`;
+		const response = await http.get(apiUrl);
+		return response.data;
+	},
 	getPaperByQuery: async (query, filters) => {
 		const paperFields =
 			"fields=title,venue,year,authors,abstract,citationCount,openAccessPdf,fieldsOfStudy,s2FieldsOfStudy,publicationTypes&limit=100";

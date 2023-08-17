@@ -56,16 +56,47 @@ class AuthorController extends AbstractController {
 		}
 		try {
 			const found = cacheHandler.get(authorId);
-			let limit = null;
+			//Arbitrary limit.
+			let limit = 150;
 			if (found) limit = found.index;
-			const data = await semanticScholar.getAuthorsPaper(authorId, limit);
-			const parsed = AuthorLogicParser.authorPapersParser(authorId, data);
+			// Every 30 or so papers.
+			const divisor = Math.ceil(limit / 30);
+			const div = Math.floor(limit / divisor);
+
+			let promise_array = [];
+			for (let offset = 0; offset < limit; offset += div) {
+				const data = semanticScholar.getAuthorsPaperOffset(
+					authorId,
+					div,
+					offset
+				);
+				promise_array.push(data);
+			}
+
+			let results_array = [];
+			(await Promise.allSettled(promise_array)).forEach((result) => {
+				console.log(result.status);
+				//Only the fullfilled promises are used.
+				if (result.status == "fulfilled")
+					//Arrays with offsets pushed into result array.
+					results_array.push(...result.value.data);
+			});
+			//If no promises could be fullfiled.
+			if (results_array.length == 0) {
+				res.status(404).json({
+					message:
+						"No citation data avaliable at this moment for this scholar.",
+				});
+				return;
+			}
+			const parsed = AuthorLogicParser.authorPapersParser(
+				authorId,
+				results_array
+			);
 			cacheCitations.set(authorId, parsed);
 			res.json(parsed).end();
 		} catch (error) {
-			res.status(500).send({
-				message: error.message,
-			});
+			res.status(500).json({ message: error.message });
 		}
 	}
 
@@ -107,7 +138,7 @@ class AuthorController extends AbstractController {
 
 			// Use Promise.all to make multiple API requests asynchronously
 			const authorDataPromises = toBeRequested.map((author) =>
-				semanticScholar.getAuthorsPaper(author.authorId, author.index)
+				semanticScholar.getAuthorsPaper(author.authorId, author.index/2)
 			);
 
 			const authorDataResults = await Promise.all(authorDataPromises);

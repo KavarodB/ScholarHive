@@ -1,6 +1,7 @@
 # ScholarHive
 Scholar Hive is a web-based application that allows researchers and scholars to analyze profiles based on publications, citations, h-index, and other relevant metrics, and visualize that data in a visual and textual form.
 This application is written with Node.js and Express, fully native for the browser.
+The frontend code is written on Angular and is under /frontend_Code and is compiled to html and js in /public.
 
 ## Installation Node.js
 For Ubuntu follow the instruction below:
@@ -39,6 +40,7 @@ it should output something this or a greater version:
 For Mac and Windows check the links below:
 1. [Windows](https://radixweb.com/blog/installing-npm-and-nodejs-on-windows-and-mac#windows)
 2. [Mac](https://radixweb.com/blog/installing-npm-and-nodejs-on-windows-and-mac#mac) 
+
 
 ## Installation project
 After you have installed npm and node.js 
