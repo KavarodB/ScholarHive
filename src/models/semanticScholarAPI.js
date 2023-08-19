@@ -29,6 +29,7 @@ const SemanticScholar = {
 		const response = await http.get(apiUrl);
 		return response.data;
 	},
+	//@Deprecated.
 	getAuthorsPaper: async (authorId, limit) => {
 		//Limit reset.
 		if (limit == null || limit > 700) limit = 500;

@@ -37,7 +37,7 @@ class PaperCitationData {
 		selfcitationrate = (this.totalCitations / divider).toPrecision(11);
 		selfcitationrate = 100 / selfcitationrate;
 
-		return Number.parseFloat(selfcitationrate.toPrecision(3));
+		return Number.parseFloat(selfcitationrate.toPrecision(3)) || 0;
 	}
 	#calculateCoCitationRate() {
 		let cocitationrate = 0;
@@ -45,7 +45,7 @@ class PaperCitationData {
 		cocitationrate = (this.totalCitations / divider).toPrecision(11);
 		cocitationrate = 100 / cocitationrate;
 
-		return Number.parseFloat(cocitationrate.toPrecision(3));
+		return Number.parseFloat(cocitationrate.toPrecision(3)) || 0;
 	}
 }
 export default PaperCitationData;

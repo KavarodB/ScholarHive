@@ -8,6 +8,7 @@ const cacheHandler = new LRUCacheHandler();
 const cacheCitations = new LRUCacheHandler();
 
 class AuthorController extends AbstractController {
+	//* Search scholar by full or partial name.
 	async authorByName(req, res) {
 		try {
 			const data = await semanticScholar.getAuthorByName(req.body.authorname);
@@ -30,6 +31,7 @@ class AuthorController extends AbstractController {
 		}
 	}
 
+	//* Get information about a give scholar.
 	async authorById(req, res) {
 		const authorId = req.body.authorId;
 		const found = cacheHandler.get(authorId);
@@ -47,6 +49,7 @@ class AuthorController extends AbstractController {
 		}
 	}
 
+	//*Get Citation data for chart method -> needs fine-tuning.
 	async authorPapers(req, res) {
 		const { authorId } = req.body;
 		const found_cit = cacheCitations.get(authorId);
@@ -54,41 +57,36 @@ class AuthorController extends AbstractController {
 			res.json(found_cit).end();
 			return;
 		}
+		const found = cacheHandler.get(authorId);
+		if (!found) {
+			res.status(400).send({
+				message: "Error: Retrieving the indexes for scholar  " + authorId,
+			});
+			return;
+		}
 		try {
-			const found = cacheHandler.get(authorId);
-			//Arbitrary limit.
-			let limit = 150;
-			if (found) limit = found.index;
-			// Every 30 or so papers.
-			const divisor = Math.ceil(limit / 30);
-			const div = Math.floor(limit / divisor);
-
+			const indexes = found.index;
 			let promise_array = [];
-			for (let offset = 0; offset < limit; offset += div) {
+			let offset = 0;
+			for (let index = 0; index < indexes.length; index++) {
+				const boundry = indexes[index];
 				const data = semanticScholar.getAuthorsPaperOffset(
 					authorId,
-					div,
+					boundry - offset,
 					offset
 				);
+				offset = boundry;
 				promise_array.push(data);
 			}
-
 			let results_array = [];
 			(await Promise.allSettled(promise_array)).forEach((result) => {
 				console.log(result.status);
 				//Only the fullfilled promises are used.
-				if (result.status == "fulfilled")
+				if (result.status == "fulfilled") {
 					//Arrays with offsets pushed into result array.
 					results_array.push(...result.value.data);
+				}
 			});
-			//If no promises could be fullfiled.
-			if (results_array.length == 0) {
-				res.status(404).json({
-					message:
-						"No citation data avaliable at this moment for this scholar.",
-				});
-				return;
-			}
 			const parsed = AuthorLogicParser.authorPapersParser(
 				authorId,
 				results_array
@@ -96,10 +94,74 @@ class AuthorController extends AbstractController {
 			cacheCitations.set(authorId, parsed);
 			res.json(parsed).end();
 		} catch (error) {
+			console.log(error.message);
 			res.status(500).json({ message: error.message });
 		}
 	}
 
+	//@Deprecated.
+	// async authorPapers2(req, res) {
+	// 	const { authorId } = req.body;
+	// 	const found_cit = cacheCitations.get(authorId);
+	// 	if (found_cit) {
+	// 		res.json(found_cit).end();
+	// 		return;
+	// 	}
+	// 	try {
+	// 		const found = cacheHandler.get(authorId);
+	// 		//Arbitrary limit.
+	// 		let limit = 150;
+	// 		if (found) limit = found.index;
+	// 		// Every 30 or so papers.
+	// 		const divisor = Math.ceil(limit / 10);
+	// 		const div = Math.floor(limit / divisor);
+	// 		let promise_array = [];
+	// 		for (let offset = 0; offset < limit; offset += div) {
+	// 			const data = semanticScholar.getAuthorsPaperOffset(
+	// 				authorId,
+	// 				div,
+	// 				offset
+	// 			);
+	// 			promise_array.push(data);
+	// 		}
+
+	// 		let results_array = [];
+	// 		(await Promise.allSettled(promise_array)).forEach((result) => {
+	// 			console.log(result.status);
+	// 			//Only the fullfilled promises are used.
+	// 			if (result.status == "fulfilled") {
+	// 				//Test
+	// 				const count = result.value.data
+	// 					.map((paper) => paper.citations.length)
+	// 					.reduce(
+	// 						(accumulator, currentValue) => accumulator + currentValue,
+	// 						0
+	// 					);
+	// 				console.log(count);
+	// 				//Arrays with offsets pushed into result array.
+	// 				results_array.push(...result.value.data);
+	// 			}
+	// 		});
+	// 		//If no promises could be fullfiled.
+	// 		if (results_array.length == 0) {
+	// 			res.status(404).json({
+	// 				message:
+	// 					"No citation data avaliable at this moment for this scholar.",
+	// 			});
+	// 			return;
+	// 		}
+	// 		const parsed = AuthorLogicParser.authorPapersParser(
+	// 			authorId,
+	// 			results_array
+	// 		);
+	// 		cacheCitations.set(authorId, parsed);
+	// 		res.json(parsed).end();
+	// 	} catch (error) {
+	// 		res.status(500).json({ message: error.message });
+	// 	}
+	// }
+
+	//* Get information about scholar's coatuhors.
 	async authorCoAuthors(req, res) {
 		const { authorId } = req.body;
 		const found = cacheHandler.get(authorId);
@@ -108,7 +170,7 @@ class AuthorController extends AbstractController {
 			//100 most relevent coauthors. sorted from previous call.
 			coauthorIds = found.paperData.coauthorIds.slice(0, 100);
 		} else {
-			res.status(500).send({
+			res.status(400).send({
 				message:
 					"Error: Retrieving the list of coauthors for scholar  " + authorId,
 			});
@@ -126,6 +188,7 @@ class AuthorController extends AbstractController {
 		}
 	}
 
+	//*Comparing scholars route -> needs more tests.
 	async authorCompare(req, res) {
 		const scholarList = req.body.scholarList;
 		try {
@@ -136,26 +199,47 @@ class AuthorController extends AbstractController {
 				.filter((entry) => entry.hasCitationData == true)
 				.map((entry) => entry.citationData);
 
-			// Use Promise.all to make multiple API requests asynchronously
-			const authorDataPromises = toBeRequested.map((author) =>
-				semanticScholar.getAuthorsPaper(
-					author.authorId,
-					Math.floor(author.index / 2)
-				)
-			);
-
-			const authorDataResults = await Promise.all(authorDataPromises);
-			const citationDataResults = authorDataResults.map((result, index) => {
-				const data = AuthorLogicParser.authorPapersParser(
-					toBeRequested[index].authorId,
-					result
-				);
-				cacheCitations.set(toBeRequested[index].authorId, data);
-				return data;
+			let promise_array = [];
+			toBeRequested.forEach((author) => {
+				let promises = [];
+				let offset = 0;
+				for (let index = 0; index < author.index.length; index++) {
+					const boundry = author.index[index];
+					const data = semanticScholar.getAuthorsPaperOffset(
+						author.authorId,
+						boundry - offset,
+						offset
+					);
+					offset = boundry;
+					promises.push(data);
+				}
+				promise_array.push(promises);
 			});
-			citationDataResults.push(...toBeLeft);
-			res.json(citationDataResults);
+
+			const results = [];
+			results.push(...toBeLeft);
+
+			for (const [index, promises] of promise_array.entries()) {
+				let results_array = [];
+				console.log("Promise #", index);
+				(await Promise.allSettled(promises)).forEach((result) => {
+					console.log(result.status);
+					//Only the fullfilled promises are used.
+					if (result.status == "fulfilled")
+						//Arrays with offsets pushed into result array.
+						results_array.push(...result.value.data);
+				});
+				const parsed = AuthorLogicParser.authorPapersParser(
+					toBeRequested[index].authorId,
+					results_array
+				);
+				cacheCitations.set(toBeRequested[index].authorId, parsed);
+				results.push(parsed);
+			}
+
+			res.json(results);
 		} catch (error) {
+			console.log(error.message);
 			res.status(500).json({ message: "Error: " + error.message });
 		}
 	}

@@ -2,7 +2,7 @@ import NodeCache from "node-cache";
 
 class LRUCacheHandler {
 	#cache = null;
-	constructor(maxSize = 12) {
+	constructor(maxSize = 32) {
 		this.#cache = new NodeCache();
 		this.maxSize = maxSize;
 		this.lruQueue = [];
@@ -21,6 +21,7 @@ class LRUCacheHandler {
 		}
 		return value;
 	}
+
 	listAllKeys() {
 		return this.#cache.keys();
 	}

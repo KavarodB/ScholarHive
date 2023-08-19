@@ -1,8 +1,8 @@
 import PaperAuthorData from "../classes/PaperAuthorData.js";
 import PaperCitationData from "../classes/PaperCitationData.js";
 import PaperCoAuthorData from "../classes/PaperCoAuthorData.js";
-import calcIndexEdgeCase from "../utils/calculateIndexEdge.js";
-import filterPaperWithTotalCitation from "../utils/sortPapersByCitations.js";
+import { getPaperIndexesByCitationBoundry } from "../utils/getPapersByCitationBoundry.js";
+
 class AuthorLogicParser {
 	static authorIdParser(apiResponse) {
 		// Parser paper data.
@@ -10,21 +10,13 @@ class AuthorLogicParser {
 			apiResponse.authorId,
 			apiResponse.papers
 		);
-		// Find the limit of papers that reach the quota of 10K citations.
-		let index = filterPaperWithTotalCitation(apiResponse.papers).length;
-		// Add increment for edge case.
-		if (
-			index == 500 &&
-			apiResponse.citationCount > paperData.citationCount &&
-			paperData.citationCount < 9800
-		)
-			index = calcIndexEdgeCase(
-				apiResponse.paperCount,
-				apiResponse.citationCount,
-				paperData.citationCount,
-				index
-			);
-		console.log("Index", index);
+
+		// Find the cluster points of all papers that reach the quota of 10K citations OR up to 500 papers.
+		let indexes = getPaperIndexesByCitationBoundry(apiResponse.papers);
+
+		console.log("Limit: ", apiResponse.paperCount);
+		console.log("Indexes: ", indexes);
+
 		//Response building.
 		const responseObj = {
 			authorId: apiResponse.authorId,
@@ -35,9 +27,10 @@ class AuthorLogicParser {
 			paperCount: apiResponse.paperCount,
 			citationCount: apiResponse.citationCount,
 			hIndex: apiResponse.hIndex,
-			index: index,
+			index: indexes,
 			paperData: paperData,
 		};
+
 		return responseObj;
 	}
 
