@@ -9,8 +9,8 @@ const http = axios.create({
 	},
 });
 
-const SemanticScholar = {
-	getAuthorByName: async (authorname) => {
+class SemanticScholar{
+	static async getAuthorByName(authorname) {
 		const authorFields =
 			"fields=name,aliases,affiliations,homepage,paperCount,hIndex";
 		const authorLimit = "limit=35";
@@ -20,17 +20,17 @@ const SemanticScholar = {
 		)}&${authorFields}&${authorLimit}`;
 		const response = await http.get(apiUrl);
 		return response.data;
-	},
-	getAuthorById: async (authorId) => {
+	}
+	static async getAuthorById(authorId) {
 		const authorFields =
 			"fields=name,aliases,affiliations,homepage,paperCount,citationCount,hIndex,papers.title,papers.venue,papers.year,papers.authors,papers.referenceCount,papers.citationCount,papers.fieldsOfStudy,papers.publicationTypes";
 		//API URL
 		const apiUrl = `https://api.semanticscholar.org/graph/v1/author/${authorId}?${authorFields}`;
 		const response = await http.get(apiUrl);
 		return response.data;
-	},
+	}
 	//@Deprecated.
-	getAuthorsPaper: async (authorId, limit) => {
+	static async getAuthorsPaper(authorId, limit){
 		//Limit reset.
 		if (limit == null || limit > 700) limit = 500;
 		const paperFields = `fields=citationCount,authors,citations.authors&limit=${limit}`;
@@ -38,8 +38,8 @@ const SemanticScholar = {
 		const apiUrl = `https://api.semanticscholar.org/graph/v1/author/${authorId}/papers?${paperFields}`;
 		const response = await http.get(apiUrl);
 		return response.data;
-	},
-	getAuthorsPaperOffset: async (authorId, limit, offset) => {
+	}
+	static async getAuthorsPaperOffset(authorId, limit, offset) {
 		//Limit reset.
 		if (limit == null || limit > 500) limit = 500;
 		const paperFields = `fields=citationCount,authors,citations.authors&limit=${limit}&offset=${offset}`;
@@ -47,8 +47,8 @@ const SemanticScholar = {
 		const apiUrl = `https://api.semanticscholar.org/graph/v1/author/${authorId}/papers?${paperFields}`;
 		const response = await http.get(apiUrl);
 		return response.data;
-	},
-	getPaperByQuery: async (query, filters) => {
+	}
+	static async getPaperByQuery(query, filters) {
 		const paperFields =
 			"fields=title,venue,year,authors,abstract,citationCount,openAccessPdf,fieldsOfStudy,s2FieldsOfStudy,publicationTypes&limit=100";
 		//API URL
@@ -77,15 +77,15 @@ const SemanticScholar = {
 		}
 		const response = await http.get(apiUrl);
 		return response.data;
-	},
-	postMultipleAuthors: async (coauthorIds) => {
+	}
+	static async postMultipleAuthors(coauthorIds){
 		const coAuthorFields =
 			"fields=name,paperCount,citationCount,hIndex,papers,papers.title,papers.citationCount,papers.influentialCitationCount,papers.s2FieldsOfStudy";
 		//API URL
 		const apiUrl = `https://api.semanticscholar.org/graph/v1/author/batch?${coAuthorFields}`;
 		const response = await http.post(apiUrl, { ids: coauthorIds });
 		return response.data;
-	},
+	}
 };
 
 export default SemanticScholar;

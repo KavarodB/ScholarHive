@@ -6,7 +6,7 @@ const router = Router();
 // Route: /author/search
 router.post(
 	"/search",
-	authorController.checkSigniture,
+	authorController.checkSigniture, 
 	authorController.authorByName
 );
 

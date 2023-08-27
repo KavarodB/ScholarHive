@@ -1,7 +1,12 @@
 import PaperAuthorData from "../classes/PaperAuthorData.js";
 import PaperCitationData from "../classes/PaperCitationData.js";
 import PaperCoAuthorData from "../classes/PaperCoAuthorData.js";
-import { getPaperIndexesByCitationBoundry } from "../utils/getPapersByCitationBoundry.js";
+
+import { getPaperIndexesByCitationBoundry } from "../utils/generateIndexes.js";
+
+import AuthorProfile from "../classes/templates/AuthorProfile.js";
+import SearchResultAuthor from "../classes/templates/SearchResultAuthor.js";
+import CoAuthor from "../classes/templates/CoAuthor.js";
 
 class AuthorLogicParser {
 	static authorIdParser(apiResponse) {
@@ -10,34 +15,19 @@ class AuthorLogicParser {
 			apiResponse.authorId,
 			apiResponse.papers
 		);
-
 		// Find the cluster points of all papers that reach the quota of 10K citations OR up to 500 papers.
-		let indexes = getPaperIndexesByCitationBoundry(apiResponse.papers);
-
-		console.log("Limit: ", apiResponse.paperCount);
-		console.log("Indexes: ", indexes);
-
-		//Response building.
-		const responseObj = {
-			authorId: apiResponse.authorId,
-			name: apiResponse.name,
-			aliases: apiResponse.aliases,
-			affiliations: apiResponse.affiliations,
-			homepage: apiResponse.homepage,
-			paperCount: apiResponse.paperCount,
-			citationCount: apiResponse.citationCount,
-			hIndex: apiResponse.hIndex,
-			index: indexes,
-			paperData: paperData,
-		};
-
-		return responseObj;
+		const indexes = getPaperIndexesByCitationBoundry(apiResponse.papers);
+		// console.log("Limit: ", apiResponse.paperCount);
+		// console.log("Indexes: ", indexes);
+		return new AuthorProfile(indexes, paperData, apiResponse);
 	}
 
 	static authorNameParser(apiResponse) {
 		//sort response by hIndex desending.
 		const content = apiResponse.data;
-		return content.sort((a, b) => (a.hIndex > b.hIndex ? -1 : 1));
+		return content
+			.map((searchResult) => new SearchResultAuthor(searchResult))
+			.sort((a, b) => (a.hIndex > b.hIndex ? -1 : 1));
 	}
 
 	static authorPapersParser(authorId, apiResponse) {
@@ -46,7 +36,7 @@ class AuthorLogicParser {
 	}
 
 	static authorCoAuthorParser(coauthors) {
-		let coAuthorsArray = [];
+		const coAuthorsArray = [];
 		const content = coauthors;
 		content.forEach((coauthor) => {
 			if (coauthor.papers.length == 0) {
@@ -54,16 +44,7 @@ class AuthorLogicParser {
 				return;
 			}
 			const paperData = new PaperCoAuthorData(coauthor.papers);
-			//Response building.
-			const co_author = {
-				authorId: coauthor.authorId,
-				name: coauthor.name,
-				paperCount: coauthor.paperCount,
-				citationCount: coauthor.citationCount,
-				hIndex: coauthor.hIndex,
-				paperData: paperData,
-			};
-			coAuthorsArray.push(co_author);
+			coAuthorsArray.push(new CoAuthor(paperData, coauthor));
 		});
 		//Sort by citation count.
 		coAuthorsArray.sort((author, author1) => {
