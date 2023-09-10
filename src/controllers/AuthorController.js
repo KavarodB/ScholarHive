@@ -181,7 +181,7 @@ class AuthorController extends AbstractController {
 		let coauthorIds = [];
 		if (found) {
 			//100 most relevent coauthors. sorted from previous call.
-			coauthorIds = found.paperData.coauthorIds.slice(0, 100);
+			coauthorIds = found.paperData.coauthorIds.slice(0,100);
 		} else {
 			res.status(400);
 			res.json({

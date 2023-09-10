@@ -64,11 +64,11 @@ class PaperAuthorData {
 	#SortCoauthors() {
 		const coauthor_treshhold = 5;
 		//Remove "accidental coauthors" and sort by descending
-		this.#coauthorMap = new Map(
-			[...this.#coauthorMap.entries()]
-				.filter(([k, v]) => v >= coauthor_treshhold)
-				.sort((a, b) => b[1] - a[1])
-		);
+		//Up to 36 couathors.
+		const array = [...this.#coauthorMap.entries()]
+			.filter(([k, v]) => v >= coauthor_treshhold)
+			.sort((a, b) => b[1] - a[1]);
+		this.#coauthorMap = new Map(array.slice(0, 36));
 		//Coauthors -> binding name with id
 		let coauthorArray = Array.from(this.#coauthorMap.keys());
 		let coauthorIds = [];
