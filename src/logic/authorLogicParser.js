@@ -17,7 +17,6 @@ class AuthorLogicParser {
 		);
 		// Find the cluster points of all papers that reach the quota of 10K citations OR up to 500 papers.
 		const indexes = getPaperIndexesByCitationBoundry(apiResponse.papers);
-		if (apiResponse.authorId == "144271439") indexes.push(550, 585);
 		// console.log("Limit: ", apiResponse.paperCount);
 		// console.log("Indexes: ", indexes);
 		return new AuthorProfile(indexes, paperData, apiResponse);
